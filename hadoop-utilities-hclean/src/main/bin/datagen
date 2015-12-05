@@ -1,0 +1,23 @@
+#!/bin/bash
+if [ ! -d "${JAVA_HOME}" ]
+then
+    echo "JAVA_HOME isn't set"
+    exit 1
+fi
+if [ ! -d "${HUTIL_HOME}" ]
+then
+    echo "HUTIL_HOME isn't set"
+    exit 1
+fi
+if [ ! -d "${HADOOP_HOME}" ]
+then
+    echo "HADOOP_HOME isn't set"
+    exit 1
+fi
+for JAR in `ls $HUTIL_HOME/lib/*.jar`; do HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$JAR; done;
+for JAR in `ls $HADOOP_HOME/lib/*.jar`; do HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$JAR; done;
+export HADOOP_CLASSPATH
+export HADOOP_OPTS="-Dhutil.home=$HUTIL_HOME $HADOOP_OPTS"
+export HADOOP_OPTS="-Dhclean.config=file://$HUTIL_HOME/conf/hclean.conf $HADOOP_OPTS"
+export HADOOP_OPTS="-Dlog4j.configuration=file://$HUTIL_HOME/conf/hclean.log4j.properties $HADOOP_OPTS"
+hadoop jar $HUTIL_HOME/lib/${project.build.finalName} com.aol.hadoop.util.Datagen $@
